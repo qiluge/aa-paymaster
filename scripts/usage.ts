@@ -1,8 +1,6 @@
 import {ethers} from "hardhat";
 import {HttpRpcClient, PaymasterAPI, SimpleAccountAPI} from "@account-abstraction/sdk";
 import {DepositPaymaster__factory} from "./types/DepositPaymaster__factory";
-import {Deferrable} from "@ethersproject/properties/src.ts";
-import {Result} from "@ethersproject/abi";
 import {UserOperationStruct} from "@account-abstraction/contracts";
 
 const USDT = '0x82dDd7cb91B377B3DaD5e9CF9A0C3e2FDF37fb59';
@@ -14,6 +12,13 @@ const bundlerUrl = 'http://localhost:3000/rpc';
 async function testPaymaster() {
     const [owner, acc] = await ethers.getSigners();
     const testToken = await ethers.getContractAt('TestToken', USDT);
+    const paymaster = await DepositPaymaster__factory.connect(depositMaster, owner);
+    const approve = await testToken.allowance(owner.address, depositMaster)
+    if (approve.lt(1)) { // prepare some asset
+        const tx = await testToken.approve(depositMaster, ethers.utils.parseEther('100000000000'))
+        console.log('owner approve USDT to deposit paymaster, ', tx.hash);
+        await tx.wait()
+    }
 
     /* owner use approve to spend token */
     let ownerWallet = new SimpleAccountAPI({
@@ -29,6 +34,12 @@ async function testPaymaster() {
         const tx = await testToken.transfer(ownerAA, ethers.utils.parseEther('100000000'))
         console.log('owner transfer 100000000 USDT to ownerAA, ', tx.hash);
         await tx.wait()
+    }
+    const ownerDepositInfo = await paymaster.depositInfo(USDT, ownerAA);
+    if (ethers.utils.parseEther('10').gt(ownerDepositInfo.amount)) { // prepare deposit
+        const tx = await paymaster.addDepositFor(testToken.address, ownerAA, ethers.utils.parseEther('10000'));
+        console.log('owner deposit 10000 USDT, ', tx.hash);
+        await tx.wait();
     }
     const bundlerProvider = new HttpRpcClient(bundlerUrl, entryPointAddress, ethers.provider.network.chainId)
     const allowance = await testToken.allowance(ownerAA, depositMaster)
@@ -61,7 +72,7 @@ async function testPaymaster() {
     const unsignedTransferOP = await ownerWallet.createUnsignedUserOp({
         target: testToken.address,
         data: testToken.interface.encodeFunctionData('transfer', [acc.address, ethers.utils.parseEther('1')]),
-        maxFeePerGas: gasPrice, maxPriorityFeePerGas: 0
+        maxFeePerGas: gasPrice, maxPriorityFeePerGas: gasPrice
     })
     const op = await ownerWallet.signUserOp(unsignedTransferOP);
     const res = await bundlerProvider.sendUserOpToBundler(op);
@@ -72,44 +83,6 @@ async function testPaymaster() {
         return
     }
     console.log('owner transfer 1 USDT(test) to acc receipt, ', bundle);
-
-    /* account deposit USDT to spend, not approve */
-    const accountWallet = new SimpleAccountAPI({
-        provider: ethers.provider,
-        entryPointAddress,
-        owner: acc,
-        factoryAddress,
-        paymasterAPI
-    })
-    const accountAA = await accountWallet.getAccountAddress();
-    console.log('accountAA', accountAA);
-    const accountAABalance = await testToken.balanceOf(accountAA);
-    if (accountAABalance.lt(1)) {
-        const tx = await testToken.transfer(accountAA, ethers.utils.parseEther('10000'));
-        console.log('transfer 10000 USDT to accountAA, ', tx.hash);
-        await tx.wait();
-    }
-    const paymaster = await DepositPaymaster__factory.connect(depositMaster, owner);
-    const depositInfo = await paymaster.depositInfo(USDT, accountAA);
-    if (ethers.utils.parseEther('10').gt(depositInfo.amount)) {
-        const tx = await paymaster.addDepositFor(testToken.address, accountAA, ethers.utils.parseEther('10000'));
-        console.log('acc deposit 10000 USDT, ', tx.hash);
-        await tx.wait();
-    }
-    const unsignedTransferOP1 = await accountWallet.createUnsignedUserOp({
-        target: testToken.address,
-        data: testToken.interface.encodeFunctionData('transfer', [acc.address, ethers.utils.parseEther('1')]),
-        maxFeePerGas: gasPrice, maxPriorityFeePerGas: 0
-    })
-    const op1 = await accountWallet.signUserOp(unsignedTransferOP1);
-    const res1 = await bundlerProvider.sendUserOpToBundler(op1);
-    console.log('acc transfer 1 USDT(test) to self, ', res1);
-    const bundle1 = await accountWallet.getUserOpReceipt(res1);
-    if (!bundle1) {
-        console.log('acc transfer 1 USDT(test) to self failed!');
-        return
-    }
-    console.log('acc transfer 1 USDT(test) to self receipt, ', bundle1);
 }
 
 class DepositPaymasterAPI extends PaymasterAPI {

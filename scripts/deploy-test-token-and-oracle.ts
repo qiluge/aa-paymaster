@@ -3,7 +3,7 @@ import {ethers} from "hardhat";
 const {DepositPaymaster__factory} = require("./types/DepositPaymaster__factory");
 const tokenName = "USDT test";
 const tokenSymbol = "USDT";
-const price = 2000; // 1 ETH = 2000 USDT
+const price = 1; // 1 ETH = 1 USDT
 const paymaster = '0x9f797CbBB062dF37502E76dfCDF74367C796b92a';
 
 async function deployTestTokenAndOracle() {

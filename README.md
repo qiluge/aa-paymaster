@@ -18,8 +18,8 @@ source: https://github.com/eth-infinitism/account-abstraction/blob/develop/contr
 
 - npm install
 - `npx hardhat run ./scripts/deploy-deposit-paymaster.ts --network bsctest` to deploy paymaster
-- modify variable of `./scripts/deploy-test-token-and-oracle` with your specific and deployed DepositMaster address
-- run `npx hardhat run ./scripts/deploy-test-token-and-oracle` to deploy and config payment token
+- modify variable of `./scripts/deploy-test-token-and-oracle.ts` with your specific and deployed DepositMaster address
+- run `npx hardhat run ./scripts/deploy-test-token-and-oracle.ts --network bsctest` to deploy and config payment token
 - replace `USDT` and `depositMaster` with your deployments at head of `./scripts/usage.ts`
 - config your oracle and oracle dependency to your bundler whitelistContracts to enable SLOT-read check
 - `npx hardhat run ./scripts/usage.ts --network bsctest` to send tx that used USDT as gas
