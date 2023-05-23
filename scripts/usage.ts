@@ -69,6 +69,7 @@ async function testPaymaster() {
         paymasterAPI
     })
     const gasPrice = await ethers.provider.getGasPrice();
+    // maxFeePerGas & maxPriorityFeePerGas should be same when chain doesn't support EIP-1559
     const unsignedTransferOP = await ownerWallet.createUnsignedUserOp({
         target: testToken.address,
         data: testToken.interface.encodeFunctionData('transfer', [acc.address, ethers.utils.parseEther('1')]),
