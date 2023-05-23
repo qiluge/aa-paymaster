@@ -6,6 +6,9 @@ account abstraction paymaster
 
 source: https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/DepositPaymaster.sol
 
+- require deposit a little token to ensure that the tx fee can be deducted when tx revert
+- require AA approve to depositPaymaster firstly
+
 ### deployments
 
 #### bsc testnet
