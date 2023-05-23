@@ -28,6 +28,7 @@ const config: HardhatUserConfig = {
         }]
     },
     networks: {
+        localhost: getNetwork('http://127.0.0.1:8545'),
         bsctest: getNetwork(`https://bsc.getblock.io/${env.GETBLOCK_ID}/testnet/`),
     },
 };
