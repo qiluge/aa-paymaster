@@ -4,7 +4,7 @@ account abstraction paymaster
 
 ## DepositPaymaster
 
-source: https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/DepositPaymaster.sol
+source: https://github.com/qiluge/account-abstraction/blob/develop/contracts/samples/DepositPaymaster.sol
 
 - require deposit a little token to ensure that the tx fee can be deducted when tx revert
 - require AA approve to depositPaymaster firstly
@@ -21,6 +21,8 @@ source: https://github.com/eth-infinitism/account-abstraction/blob/develop/contr
 
 ### usage
 
+[usage](./scripts/usage.ts)
+
 - npm install
 - npx hardhat compile
 - `npx hardhat run ./scripts/deploy-deposit-paymaster.ts --network bsctest` to deploy paymaster
@@ -34,7 +36,9 @@ source: https://github.com/eth-infinitism/account-abstraction/blob/develop/contr
 
 Like [DepositPaymaster](#depositpaymaster)
 
-source:
+source: https://github.com/qiluge/account-abstraction/blob/develop/contracts/samples/SponsorDepositPaymaster.sol
+
+[usage](./scripts/sponsor-paymaster-usage.ts)
 
 ### deployments
 
