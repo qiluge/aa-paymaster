@@ -2,9 +2,10 @@ import {ethers} from "hardhat";
 import {DepositPaymaster__factory} from "./types/DepositPaymaster__factory";
 import {EntryPoint__factory} from "./types/EntryPoint__factory";
 
+const entryPointAddr = '0xF74cB5B29D1B16dA2C62f63c0701ea13f9231e0E';
 async function deployDepositPaymaster() {
     const [signer] = await ethers.getSigners();
-    const entryPoint = await new EntryPoint__factory(signer).attach('0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789');
+    const entryPoint = await new EntryPoint__factory(signer).attach(entryPointAddr);
     const paymaster = await new DepositPaymaster__factory(signer).deploy(entryPoint.address)
     console.log(paymaster.address);
     await paymaster.deployed();

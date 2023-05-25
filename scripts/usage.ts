@@ -5,8 +5,8 @@ import {UserOperationStruct} from "@account-abstraction/contracts";
 
 const USDT = '0x82dDd7cb91B377B3DaD5e9CF9A0C3e2FDF37fb59';
 const depositMaster = '0x9f797CbBB062dF37502E76dfCDF74367C796b92a';
-const entryPointAddress = '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789';
-const factoryAddress = '0x9406cc6185a346906296840746125a0e44976454';
+const entryPointAddress = '0xF74cB5B29D1B16dA2C62f63c0701ea13f9231e0E';
+const factoryAddress = '0xF4367445262600aCe64f59a921F829aE8d0F0426';
 const bundlerUrl = 'http://localhost:3000/rpc';
 
 async function testPaymaster() {
